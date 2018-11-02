@@ -4,7 +4,7 @@ from Phidget22.Phidget import *
 from Phidget22.Devices.DCMotor import *
 from tkinter import *
 
-ACCEL = 8
+ACCEL = 2
 
 mtrA = DCMotor()
 mtrA.setDeviceSerialNumber(469502)
