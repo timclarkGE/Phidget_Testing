@@ -8,6 +8,7 @@ from tkinter import *
 
 ACCEL = 2
 
+#Line required to look for Phidget devices on the network
 Net.enableServerDiscovery(PhidgetServerType.PHIDGETSERVER_DEVICEREMOTE)
 
 mtrA = DCMotor()
