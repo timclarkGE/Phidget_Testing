@@ -26,12 +26,6 @@ mtrC.setDeviceSerialNumber(474333)
 mtrC.openWaitForAttachment(5000)
 mtrC.setAcceleration(ACCEL)
 
-#channelInfo = ChannelInfo()
-#channelInfo.netInfo.serverDiscovery = discovery
-#channelInfo.deviceSerialNumber = deviceSerialNumber
-#channelInfo.channel = channel
-#channelInfo.netInfo.isRemote = isRemote
-
 root = Tk()
 
 title = Label(root, text="3 Axis Open Loop Controller", font="Courier, 14")
