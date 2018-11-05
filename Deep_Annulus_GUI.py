@@ -2,9 +2,13 @@ import time
 from Phidget22.PhidgetException import *
 from Phidget22.Phidget import *
 from Phidget22.Devices.DCMotor import *
+from Phidget22.Net import *
+from Phidget22.ErrorCode import *
 from tkinter import *
 
 ACCEL = 2
+
+Net.enableServerDiscovery(PhidgetServerType.PHIDGETSERVER_DEVICEREMOTE)
 
 mtrA = DCMotor()
 mtrA.setDeviceSerialNumber(469502)
@@ -21,7 +25,12 @@ mtrC.setDeviceSerialNumber(474333)
 mtrC.openWaitForAttachment(5000)
 mtrC.setAcceleration(ACCEL)
 
-running = False
+#channelInfo = ChannelInfo()
+#channelInfo.netInfo.serverDiscovery = discovery
+#channelInfo.deviceSerialNumber = deviceSerialNumber
+#channelInfo.channel = channel
+#channelInfo.netInfo.isRemote = isRemote
+
 root = Tk()
 
 title = Label(root, text="3 Axis Open Loop Controller", font="Courier, 14")
