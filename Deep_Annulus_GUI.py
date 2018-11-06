@@ -1,34 +1,61 @@
-import time
-from Phidget22.PhidgetException import *
-from Phidget22.Phidget import *
 from Phidget22.Devices.DCMotor import *
+from Phidget22.Devices.CurrentInput import*
 from Phidget22.Net import *
-from Phidget22.ErrorCode import *
 from tkinter import *
+
+def updateCurrent():
+    aCur_reading.set(aCur.getCurrent())
+    bCur_reading.set(bCur.getCurrent())
+    cCur_reading.set(cCur.getCurrent())
+    root.after(100,updateCurrent)
+
+
 
 ACCEL = 2
 
 #Line required to look for Phidget devices on the network
 Net.enableServerDiscovery(PhidgetServerType.PHIDGETSERVER_DEVICEREMOTE)
 
+# Motor A: Setup Motor Control and Motor Current
 mtrA = DCMotor()
 mtrA.setDeviceSerialNumber(469502)
-mtrA.openWaitForAttachment(5000)
+mtrA.openWaitForAttachment(1000)
 mtrA.setAcceleration(ACCEL)
 
+aCur = CurrentInput()
+aCur.setDeviceSerialNumber(469502)
+aCur.openWaitForAttachment(1000)
+
+# Motor B: Setup Motor Control and Motor Current
 mtrB = DCMotor()
 mtrB.setDeviceSerialNumber(465371)
-mtrB.openWaitForAttachment(5000)
+mtrB.openWaitForAttachment(1000)
 mtrB.setAcceleration(ACCEL)
 
+bCur = CurrentInput()
+bCur.setDeviceSerialNumber(465371)
+bCur.openWaitForAttachment(1000)
+
+# Motor C: Setup Motor Control and Motor Current
 mtrC = DCMotor()
 mtrC.setDeviceSerialNumber(474333)
-mtrC.openWaitForAttachment(5000)
+mtrC.openWaitForAttachment(1000)
 mtrC.setAcceleration(ACCEL)
+
+cCur = CurrentInput()
+cCur.setDeviceSerialNumber(474333)
+cCur.openWaitForAttachment(1000)
 
 root = Tk()
 
+aCur_reading = StringVar()
+bCur_reading = StringVar()
+cCur_reading = StringVar()
+
 title = Label(root, text="3 Axis Open Loop Controller", font="Courier, 14")
+l1 = Label(root, text="Cur(A)")
+l2 = Label(root, text="Cur(A)")
+l3 = Label(root, text="Cur(A)")
 
 def start_motor(direction):
     move(direction)
@@ -59,9 +86,15 @@ b4 = Button(root, text="B-", font="Courier, 12")
 b5 = Button(root, text="C+", font="Courier, 12")
 b6 = Button(root, text="C-", font="Courier, 12")
 
+#Create the velocity scales
 aVel = Scale(root, from_=0, to=1, orient=HORIZONTAL, length=100, label="Motor A Velocity", resolution=.01)
 bVel = Scale(root, from_=0, to=1, orient=HORIZONTAL, length=100, label="Motor B Velocity", resolution=.01)
 cVel = Scale(root, from_=0, to=1, orient=HORIZONTAL, length=100, label="Motor C Velocity", resolution=.01)
+
+#Create the boxes for displaying the current
+e1 = Entry(root, width=5, state="readonly", textvariable = aCur_reading)
+e2 = Entry(root, width=5, state="readonly", textvariable = bCur_reading)
+e3 = Entry(root, width=5, state="readonly", textvariable = cCur_reading)
 
 title.grid(row=0, columnspan = 10, pady=10, sticky=N)
 b1.grid(row=1,column=0, padx=5)
@@ -73,6 +106,12 @@ b6.grid(row=1,column=5, padx=5)
 aVel.grid(row=2,column=0, columnspan=2, pady=10)
 bVel.grid(row=2,column=2, columnspan=2, pady=10)
 cVel.grid(row=2,column=4, columnspan=2, pady=10)
+l1.grid(row=3,column=0)
+e1.grid(row=3,column=1)
+l2.grid(row=3,column=2)
+e2.grid(row=3,column=3)
+l3.grid(row=3,column=4)
+e3.grid(row=3,column=5)
 
 
 b1.bind('<ButtonPress-1>', lambda event: start_motor("A+"))
@@ -93,6 +132,6 @@ b5.bind('<ButtonRelease-1>', lambda event: stop_motor())
 b6.bind('<ButtonPress-1>', lambda event: start_motor("C-"))
 b6.bind('<ButtonRelease-1>', lambda event: stop_motor())
 
-
-
+updateCurrent()
 root.mainloop()
+
