@@ -19,8 +19,8 @@ def joystick_movement(self, ratio):
     print(round(2*(ratio-0.48),1))
 
 #Set which controllers are connected
-A = 0
-B = 0
+A = 1
+B = 1
 C = 1
 
 ACCEL = 2
@@ -66,6 +66,8 @@ if C:
     pot.openWaitForAttachment(1000)
     pot.setOnVoltageRatioChangeHandler(joystick_movement)
     pot.setVoltageRatioChangeTrigger(0.05)
+
+
 
 root = Tk()
 
