@@ -7,10 +7,6 @@ from Phidget22.Net import *
 from tkinter import *
 import time
 
-#Equipment Serial Numbers
-SN_TILT = 465371
-SN_PAN = 469502
-
 #Hub Numbers for REL1000_0
 HUB_ZOOM_ENABLE = 1
 HUB_ZOOM_SELECT = 1
@@ -26,6 +22,9 @@ CH_FOCUS_SELECT = 0
 CH_MAN_SELECT = 3
 
 ACCEL = 2
+
+MAXPR = 130.5
+MINPR = 0.5
 
 def focus(direction):
     if direction == "+":
@@ -80,6 +79,20 @@ def toggle_power():
         power.setState(False)
     elif power.getState() == False:
         power.setState(True)
+
+
+def set_pressure(val):
+    #Pressure Range
+    range = MAXPR - MINPR
+    #Calculate volts/PSI
+    ratio = 5 / range
+    pressure_ctrl.setVoltage(float(val)*ratio)
+
+def update_pressure():
+    val = float(pressure_reading.getSensorValue()) #range 0-1
+    range = MAXPR - MINPR
+    pressure.set(round(range*val,2))
+    root.after(100, update_pressure)
 
 #Line required to look for Phidget devices on the network
 Net.enableServerDiscovery(PhidgetServerType.PHIDGETSERVER_DEVICEREMOTE)
@@ -155,7 +168,25 @@ pan.setDeviceSerialNumber(469502)
 pan.openWaitForAttachment(1000)
 pan.setAcceleration(ACCEL)
 
+#Setup Pnematics
+pressure_ctrl = VoltageOutput()
+pressure_ctrl.setDeviceSerialNumber(540047)
+pressure_ctrl.setIsHubPortDevice(False)
+pressure_ctrl.setHubPort(3)
+pressure_ctrl.setChannel(0)
+pressure_ctrl.openWaitForAttachment(5000)
+
+pressure_reading = VoltageRatioInput()
+pressure_reading.setDeviceSerialNumber(540047)
+pressure_reading.setIsHubPortDevice(False)
+pressure_reading.setHubPort(0)
+pressure_reading.setChannel(0)
+#pressure_reading.setVoltageRatioChangeTrigger(0.05)
+pressure_reading.openWaitForAttachment(5000)
+
 root = Tk()
+
+pressure = IntVar()
 
 power_btn = Button(root, text="PWR", font="Courier, 12", command=toggle_power)
 near = Button(root, text="NEAR", font="Courier, 12", width=7)
@@ -172,6 +203,8 @@ pan_right = Button(root, text="PAN RIGHT", font="Courier, 12", width=10)
 pan_left = Button(root, text="PAN LEFT", font="Courier, 12", width=10)
 tilt_speed = Scale(root, orient=HORIZONTAL, from_=1, to=100)
 pan_speed = Scale(root, orient=HORIZONTAL, from_=1, to=100)
+pressure_input = Scale(root, orient=HORIZONTAL, from_=MINPR, to=MAXPR, label="Set Pressure (PSI)", command=set_pressure, resolution=0.5)
+pressure_output = Entry(root, width=6, state="readonly", textvariable = pressure)
 
 power_btn.grid(row=0, column=1)
 ms.grid(row=1, column=1, padx=5, pady=5)
@@ -188,6 +221,8 @@ pan_right.grid(row=0,column=7, padx=5,pady=5)
 pan_left.grid(row=1,column=7, padx=5,pady=5)
 tilt_speed.grid(row=2,column=6)
 pan_speed.grid(row=2,column=7)
+pressure_output.grid(row=0,column=8)
+pressure_input.grid(row=1, column=8)
 
 near.bind('<ButtonPress-1>', lambda event: focus("+"))
 near.bind('<ButtonRelease-1>', lambda event: focus("0"))
@@ -208,5 +243,7 @@ pan_right.bind('<ButtonPress-1>', lambda event: pan_move("R"))
 pan_right.bind('<ButtonRelease-1>', lambda event: pan_move("0"))
 pan_left.bind('<ButtonPress-1>', lambda event: pan_move("L"))
 pan_left.bind('<ButtonRelease-1>', lambda event: pan_move("0"))
+
+update_pressure()
 root.mainloop()
 
