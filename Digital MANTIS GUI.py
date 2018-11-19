@@ -94,6 +94,12 @@ def update_pressure():
     pressure.set(round(range*val,2))
     root.after(100, update_pressure)
 
+def actuate():
+    if solenoid.getState() == True:
+        solenoid.setState(False)
+    elif solenoid.getState() == False:
+        solenoid.setState(True)
+
 #Line required to look for Phidget devices on the network
 Net.enableServerDiscovery(PhidgetServerType.PHIDGETSERVER_DEVICEREMOTE)
 
@@ -141,7 +147,6 @@ manual_select.setHubPort(HUB_MAN_SELECT)
 manual_select.setChannel(CH_MAN_SELECT)
 manual_select.openWaitForAttachment(5000)
 
-
 #Setup Lights
 left_light = DCMotor()
 left_light.setDeviceSerialNumber(540047)
@@ -181,8 +186,14 @@ pressure_reading.setDeviceSerialNumber(540047)
 pressure_reading.setIsHubPortDevice(False)
 pressure_reading.setHubPort(0)
 pressure_reading.setChannel(0)
-#pressure_reading.setVoltageRatioChangeTrigger(0.05)
 pressure_reading.openWaitForAttachment(5000)
+
+solenoid = DigitalOutput()
+solenoid.setDeviceSerialNumber(540047)
+solenoid.setIsHubPortDevice(False)
+solenoid.setHubPort(4)
+solenoid.setChannel(3)
+solenoid.openWaitForAttachment(5000)
 
 root = Tk()
 
@@ -205,6 +216,7 @@ tilt_speed = Scale(root, orient=HORIZONTAL, from_=1, to=100)
 pan_speed = Scale(root, orient=HORIZONTAL, from_=1, to=100)
 pressure_input = Scale(root, orient=HORIZONTAL, from_=MINPR, to=MAXPR, label="Set Pressure (PSI)", command=set_pressure, resolution=0.5)
 pressure_output = Entry(root, width=6, state="readonly", textvariable = pressure)
+solenoid_btn = Button(root, text="AIR", font="Courier, 12", width=3, command=actuate)
 
 power_btn.grid(row=0, column=1)
 ms.grid(row=1, column=1, padx=5, pady=5)
@@ -223,6 +235,7 @@ tilt_speed.grid(row=2,column=6)
 pan_speed.grid(row=2,column=7)
 pressure_output.grid(row=0,column=8)
 pressure_input.grid(row=1, column=8)
+solenoid_btn.grid(row=0, column=9, rowspan=2, padx=5, pady=5)
 
 near.bind('<ButtonPress-1>', lambda event: focus("+"))
 near.bind('<ButtonRelease-1>', lambda event: focus("0"))
