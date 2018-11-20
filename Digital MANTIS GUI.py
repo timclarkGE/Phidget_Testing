@@ -1,3 +1,7 @@
+#Known Bugs
+#1  -   When using the pressure regulation at full pressure. The "pressure _reading.getSensorValue()" has a Phidget
+#       Exception. This only happens during high pressure.
+
 from Phidget22.Devices.DCMotor import *
 from Phidget22.Devices.CurrentInput import *
 from Phidget22.Devices.VoltageRatioInput import *
@@ -154,6 +158,7 @@ left_light.setIsHubPortDevice(False)
 left_light.setHubPort(0)
 left_light.setChannel(0)
 left_light.openWaitForAttachment(5000)
+left_light.setAcceleration(20)
 
 right_light = DCMotor()
 right_light.setDeviceSerialNumber(540047)
@@ -161,6 +166,7 @@ right_light.setIsHubPortDevice(False)
 right_light.setHubPort(5)
 right_light.setChannel(0)
 right_light.openWaitForAttachment(5000)
+right_light.setAcceleration(20)
 
 #Setup pan and tilt motors
 tilt = DCMotor()
