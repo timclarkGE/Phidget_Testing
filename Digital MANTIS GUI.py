@@ -93,9 +93,12 @@ def set_pressure(val):
     pressure_ctrl.setVoltage(float(val)*ratio)
 
 def update_pressure():
-    val = float(pressure_reading.getSensorValue()) #range 0-1
-    range = MAXPR - MINPR
-    pressure.set(round(range*val,2))
+    #val = float(pressure_reading.getSensorValue()) #range 0-1, if regulator is on it will be about 0.19
+    #range = MAXPR - MINPR
+    #pressure.set(round(range*val,2))
+    val = float(pressure_reading.getSensorValue())
+    PSI = val*160.5 -30.5
+    pressure.set(round(PSI,2))
     root.after(100, update_pressure)
 
 def actuate():
@@ -103,6 +106,17 @@ def actuate():
         solenoid.setState(False)
     elif solenoid.getState() == False:
         solenoid.setState(True)
+
+def open_menu():
+    wait = 0.15
+    for x in range(3):
+        set("ON")
+        time.sleep(wait)
+        set("OFF")
+        time.sleep(wait)
+    zoom("+")
+    time.sleep(wait)
+    zoom("0")
 
 #Line required to look for Phidget devices on the network
 Net.enableServerDiscovery(PhidgetServerType.PHIDGETSERVER_DEVICEREMOTE)
@@ -223,6 +237,10 @@ pan_speed = Scale(root, orient=HORIZONTAL, from_=1, to=100)
 pressure_input = Scale(root, orient=HORIZONTAL, from_=MINPR, to=MAXPR, label="Set Pressure (PSI)", command=set_pressure, resolution=0.5)
 pressure_output = Entry(root, width=6, state="readonly", textvariable = pressure)
 solenoid_btn = Button(root, text="AIR", font="Courier, 12", width=3, command=actuate)
+menu = Button(root, text="CAMERA MENU", font="Courier, 12", width=16, command=open_menu)
+
+tilt_speed.set(75)
+pan_speed.set(75)
 
 power_btn.grid(row=0, column=1)
 ms.grid(row=1, column=1, padx=5, pady=5)
@@ -242,6 +260,7 @@ pan_speed.grid(row=2,column=7)
 pressure_output.grid(row=0,column=8)
 pressure_input.grid(row=1, column=8)
 solenoid_btn.grid(row=0, column=9, rowspan=2, padx=5, pady=5)
+menu.grid(row=2, column=0, columnspan=4)
 
 near.bind('<ButtonPress-1>', lambda event: focus("+"))
 near.bind('<ButtonRelease-1>', lambda event: focus("0"))
