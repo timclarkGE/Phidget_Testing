@@ -18,10 +18,15 @@ def joystick_movement(self, ratio):
     mtrC.setTargetVelocity(round(2*(ratio-0.48),1))
     print(round(2*(ratio-0.48),1))
 
+def holding_voltage(value):
+    print(value)
+    mtrA.setTargetVelocity(-1*float(value))
+
+
 #Set which controllers are connected
 A = 1
-B = 1
-C = 1
+B = 0
+C = 0
 
 ACCEL = 2
 
@@ -31,12 +36,12 @@ Net.enableServerDiscovery(PhidgetServerType.PHIDGETSERVER_DEVICEREMOTE)
 if A:
     # Motor A: Setup Motor Control and Motor Current
     mtrA = DCMotor()
-    mtrA.setDeviceSerialNumber(469502)
+    mtrA.setDeviceSerialNumber(534830)
     mtrA.openWaitForAttachment(1000)
     mtrA.setAcceleration(ACCEL)
 
     aCur = CurrentInput()
-    aCur.setDeviceSerialNumber(469502)
+    aCur.setDeviceSerialNumber(534830)
     aCur.openWaitForAttachment(1000)
 
 if B:
@@ -92,6 +97,7 @@ def start_motor(direction):
 def stop_motor():
     if A:
         mtrA.setTargetVelocity(0)
+        mtrA.setTargetVelocity(-1*float(aHold.get()))
     if B:
         mtrB.setTargetVelocity(0)
     if C:
@@ -123,6 +129,7 @@ if C:
 #Create the velocity scales
 if A:
     aVel = Scale(root, from_=0, to=1, orient=HORIZONTAL, length=100, label="Motor A Velocity", resolution=.01)
+    aHold = Scale(root, from_=0, to=.12, orient=HORIZONTAL, length=100, label="Holding Voltage", resolution=.005, command=holding_voltage)
 if B:
     bVel = Scale(root, from_=0, to=1, orient=HORIZONTAL, length=100, label="Motor B Velocity", resolution=.01)
 if C:
@@ -143,6 +150,7 @@ if A:
     aVel.grid(row=2,column=0, columnspan=2, pady=10)
     l1.grid(row=3,column=0)
     e1.grid(row=3,column=1)
+    aHold.grid(row=4,column=0, columnspan=2, pady=10)
 
     b1.bind('<ButtonPress-1>', lambda event: start_motor("A+"))
     b1.bind('<ButtonRelease-1>', lambda event: stop_motor())

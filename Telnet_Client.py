@@ -1,7 +1,7 @@
 import telnetlib
 import time
 
-HOST = "192.168.1.100"
+HOST = "192.168.1.102"
 #Connect us to the server
 tn = telnetlib.Telnet(HOST, "2217")
 text = "Hello World\n"
